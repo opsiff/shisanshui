@@ -1,9 +1,10 @@
 import requests
 import json
 
-
 # 注册
 # register and print http response
+
+global user_id
 
 
 def register():
@@ -29,7 +30,7 @@ def register2():
 
 
 # 登陆
-# login Success return token And faild return 0/show login status
+# login Success return token And faild return {}/show login status
 # global user_id
 
 def login():
@@ -44,17 +45,14 @@ def login():
         responsedict = json.loads(r.text)
         status = responsedict['status']
         if (status == 0):
-            token = responsedict['data']['token']
-            global user_id
-            user_id = responsedict['data']['user_id']
-            return token
+            return responsedict
         else:
             print("login_error")
-            return '0'
+            return {}
     else:
         print("login_error,status_code=")
         print(r.status_code)
-        return '0'
+        return {}
 
 
 # 注销
@@ -454,16 +452,19 @@ def transfer(cards_dict):
                         elif Dui(tmp_choose):
                             val = 13
                         if val > back_val:
-                            #python `s '==' is not a copy
+                            # python `s '==' is not a copy
                             back_choose = tmp_choose.copy()
-                            #print(back_choose)
+                            # print(back_choose)
                             back_val = val
                         tmp_choose.pop()
                     tmp_choose.pop()
                 tmp_choose.pop()
             tmp_choose.pop()
         tmp_choose.pop()
-    print(back_choose,back_val)
+    print(back_choose, back_val)
 
 
-transfer(get_cards(login()))
+redict = login()
+token = redict['data']['token']
+user_id = redict['data']['user_id']
+transfer(get_cards(token))
