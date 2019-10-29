@@ -1,7 +1,8 @@
 import requests
 import json
 
-"注册"  # register and print http response
+#注册
+# register and print http response
 
 
 def register():
@@ -13,7 +14,8 @@ def register():
     print(r.text)
 
 
-"注册+绑定"  # register and print http response
+#注册+绑定
+# register and print http response
 
 
 def register2():
@@ -25,9 +27,8 @@ def register2():
     print(r.text)
 
 
-"登陆"  # login Success return token And faild return 0/show login status
-
-
+# 登陆
+# login Success return token And faild return 0/show login status
 # global user_id
 
 def login():
@@ -55,7 +56,8 @@ def login():
         return '0'
 
 
-"注销"  # return True or False/print info
+#注销
+# return True or False/print info
 
 
 def logout(token):
@@ -78,7 +80,8 @@ def logout(token):
         return False
 
 
-"绑定"  # return True or False/print info
+#绑定
+# return True or False/print info
 
 
 def bind_num(token):
@@ -103,7 +106,8 @@ def bind_num(token):
         return False
 
 
-"登陆验证"  # check token and return True or False /show 'check_token_login_success'
+# 登陆验证
+# check token and return True or False /show 'check_token_login_success'
 
 
 def check_token(token):
@@ -126,7 +130,8 @@ def check_token(token):
         return False
 
 
-"历史纪录"  # return text
+#历史纪录
+# return text
 
 
 def history_list(token):
@@ -144,7 +149,7 @@ def history_list(token):
     return r.text
 
 
-"排行榜"
+#排行榜
 
 
 def rank():
@@ -154,7 +159,8 @@ def rank():
         print(i)
 
 
-"开启牌局"  # return cards_dict = {'id': id, 'cards': cards}
+# 开启牌局
+# return cards_dict = {'id': id, 'cards': cards}
 
 
 def get_cards(token):
@@ -172,7 +178,8 @@ def get_cards(token):
     return cards_dict
 
 
-"出牌"  # return True or False/print info
+#出牌
+# return True or False/print info
 
 
 def deliver_cards(cards_dict, token):
@@ -196,3 +203,9 @@ def deliver_cards(cards_dict, token):
         print(r.status_code)
         return False
 
+
+#AI 把牌分成三墩并输出
+
+def transfer(cards_dict):
+    cards=cards_dict['cards']
+    #𝐴 > 𝐾 > 𝑄 > 𝐽 > 10 > 9 > 8 > 7 > 6 > 5 > 4 > 3 > 2
