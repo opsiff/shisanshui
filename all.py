@@ -171,8 +171,8 @@ def get_cards(token):
     data = response.text
     data_dict = json.loads(data)
     cards = data_dict["data"]["card"]
-    id = data_dict["data"]["id"]
-    cards_dict = {'id': id, 'cards': cards}
+    combat_id = data_dict["data"]["id"]
+    cards_dict = {'id': combat_id, 'cards': cards}
     print('card_dict:', cards_dict)
     return cards_dict
 
@@ -412,12 +412,15 @@ def transfer(cards_dict):
     map_hua = {'#': 0, '*': 1, '&': 2, '$': 3}
     map_num = {'A': 14, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 11,
                'Q': 12, 'K': 13}
+    list_hua = ['#', '*', '&', '$']
+    list_num = ['0','1','2','3','4','5','6','7','8','9','10','J','Q','K','A']
     card_list = []
     for i in cards:
         x, y = map_hua[i[0]], map_num[i[1:len(i)]]
         card_list.append((x, y))
     print(card_list)
     sz = len(card_list)
+    # 后墩
     back_choose = []
     back_val = 0
     tmp_choose = []
@@ -436,21 +439,24 @@ def transfer(cards_dict):
                         val = 0
                         # 顺序比较 同花顺 > 炸弹 > 葫芦 > 同花 > 顺子 > 三条 > 二对 > 一对 > 散牌
                         if Tonghuashun(tmp_choose):
-                            val = 20
+                            val = 68
                         elif Zhadan(tmp_choose):
-                            val = 19
+                            val = 67
                         elif Hulu(tmp_choose):
-                            val = 18
+                            val = 66
                         elif Tonghua(tmp_choose):
-                            val = 17
+                            val = 65
                         elif Shunzi(tmp_choose):
-                            val = 16
+                            val = 64
                         elif Santiao5(tmp_choose):
-                            val = 15
+                            val = 63
                         elif Erdui(tmp_choose):
-                            val = 14
+                            val = 62
                         elif Dui(tmp_choose):
-                            val = 13
+                            val = 61
+                        else:
+                            for num in tmp_choose:
+                                val+=num[1]
                         if val > back_val:
                             # python `s '==' is not a copy
                             back_choose = tmp_choose.copy()
@@ -461,10 +467,86 @@ def transfer(cards_dict):
                 tmp_choose.pop()
             tmp_choose.pop()
         tmp_choose.pop()
-    print(back_choose, back_val)
-
+    print('back_choose=',back_choose, back_val)
+    for card in back_choose:
+        card_list.remove(card)
+    # 中墩
+    mid_choose = []
+    mid_val = 0
+    tmp_choose = []
+    cnt = 0
+    sz = len(card_list)
+    for i in range(0, sz, 1):
+        tmp_choose.append(card_list[i])
+        for j in range(i + 1, sz, 1):
+            tmp_choose.append(card_list[j])
+            for k in range(j + 1, sz, 1):
+                tmp_choose.append(card_list[k])
+                for l in range(k + 1, sz, 1):
+                    tmp_choose.append(card_list[l])
+                    for m in range(l + 1, sz, 1):
+                        tmp_choose.append(card_list[m])
+                        cnt += 1
+                        val = 0
+                        # 顺序比较 同花顺 > 炸弹 > 葫芦 > 同花 > 顺子 > 三条 > 二对 > 一对 > 散牌
+                        if Tonghuashun(tmp_choose):
+                            val = 68
+                        elif Zhadan(tmp_choose):
+                            val = 67
+                        elif Hulu(tmp_choose):
+                            val = 66
+                        elif Tonghua(tmp_choose):
+                            val = 65
+                        elif Shunzi(tmp_choose):
+                            val = 64
+                        elif Santiao5(tmp_choose):
+                            val = 63
+                        elif Erdui(tmp_choose):
+                            val = 62
+                        elif Dui(tmp_choose):
+                            val = 61
+                        else:
+                            for num in tmp_choose:
+                                val += num[1]
+                        if val > mid_val:
+                            # python `s '==' is not a copy
+                            mid_choose = tmp_choose.copy()
+                            mid_val = val
+                        tmp_choose.pop()
+                    tmp_choose.pop()
+                tmp_choose.pop()
+            tmp_choose.pop()
+        tmp_choose.pop()
+    print('mid_choose=', mid_choose, mid_val)
+    for card in mid_choose:
+        card_list.remove(card)
+    for i in range(0,len(card_list)):
+        card_list[i]=list_hua[card_list[i][0]]+list_num[card_list[i][1]]
+    for i in range(0, len(mid_choose)):
+        mid_choose[i] = list_hua[mid_choose[i][0]] + list_num[mid_choose[i][1]]
+    for i in range(0, len(back_choose)):
+        back_choose[i] = list_hua[back_choose[i][0]] + list_num[back_choose[i][1]]
+    strcard_list=''
+    for i in range(0, len(card_list)):
+        strcard_list+=card_list[i]
+        if i != len(card_list)-1:
+            strcard_list+=' '
+    strmid_list = ''
+    for i in range(0, len(mid_choose)):
+        strmid_list += mid_choose[i]
+        if i != len(mid_choose) - 1:
+            strmid_list += ' '
+    strback_list = ''
+    for i in range(0, len(back_choose)):
+        strback_list += back_choose[i]
+        if i != len(back_choose) - 1:
+            strback_list += ' '
+    card_ans=[strcard_list,strmid_list,strback_list]
+    cards_dict['cards']=card_ans
+    print(cards_dict)
+    return cards_dict
 
 redict = login()
 token = redict['data']['token']
 user_id = redict['data']['user_id']
-transfer(get_cards(token))
+deliver_cards(transfer(get_cards(token)),token)
