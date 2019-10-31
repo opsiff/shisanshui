@@ -11,12 +11,13 @@
 
 ## 运行环境
 
-Python 3.X ,需要json和requests模块
+AI:Python 3.X ,需要json和requests模块
+UI:Html，需要Windows环境
 
 ## 编译方法
 `python all.py`
 
 ## 使用方法 
-UI在UI.zip中
+UI代码在UI.zip中，二进制在UIexe.zip&z01中，下载解压缩后运行UI.exe即可
 
 AI在all.py中，all.py给出了登陆注销注册绑定发牌出牌排行榜等一系列的接口
